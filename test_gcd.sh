@@ -1,42 +1,31 @@
 #!/bin/bash
 
 # 2つの自然数を入力
-out1=$(./gcd.sh 2 4)
-exout1="最大公約数：2"
-if [ "$out1" != "$exout1" ]; then
-    echo "失敗1：出力($out1)が期待される値($exout1)ではない。" >&2
-    exit 1
-else
-    echo "成功1"
-fi
+echo "最大公約数：2" > /tmp/$$-ans
+./gcd.sh 2 4 > /tmp/$$-result
+diff /tmp/$$-ans /tmp/$$-result || echo "エラー：テスト 1" >> /tmp/$$-error.log
 
 # 1つの自然数しか入力しない
-out2=$(./gcd.sh 3 2>&1)
-exout2="2つの自然数を入力してください"
-if [ "$out2" != "$exout2" ]; then
-    echo "失敗2：出力($out2)が期待される値($exout2)ではない。" >&2
-    exit 1
-else
-    echo "成功2"
-fi
+echo "2つの自然数を入力してください" > /tmp/$$-ans
+./gcd.sh 2 2>/tmp/$$-result
+diff /tmp/$$-ans /tmp/$$-result || echo "エラー：テスト 2" >> /tmp/$$-error.log
 
 # 文字を入力する
-out3=$(./gcd.sh aa aaa 2>&1)
-exout3="2つの自然数を入力してください"
-if [ "$out3" != "$exout3" ]; then
-    echo "失敗3：出力($out3)が期待される値($exout3)ではない。" >&2
-    exit 1
-else
-    echo "成功3"
-fi
+echo "2つの自然数を入力してください" > /tmp/$$-ans
+./gcd.sh aaa aaaa 2>/tmp/$$-result
+diff /tmp/$$-ans /tmp/$$-result || echo "エラー：テスト 3" >> /tmp/$$-error.log
 
 # 2つの自然数を入力(素数)
-out4=$(./gcd.sh 3 11)
-exout4="最大公約数：1"
-if [ "$out4" != "$exout4" ]; then
-    echo "失敗4：出力($out4)が期待される値($exout4)ではない。" >&2
+echo "最大公約数：1" > /tmp/$$-ans
+./gcd.sh 3 11 > /tmp/$$-result
+diff /tmp/$$-ans /tmp/$$-result || echo "エラー：テスト 4" >> /tmp/$$-error.log
+
+if [ -f /tmp/$$-error.log ]; then
+    cat /tmp/$$-error.log 1>&2
+    rm /tmp/$$-ans /tmp/$$-result /tmp/$$-error.log
     exit 1
 else
-    echo "成功4"
+    rm /tmp/$$-ans /tmp/$$-result
+    echo "全てのテストが成功しました。"
 fi
 
